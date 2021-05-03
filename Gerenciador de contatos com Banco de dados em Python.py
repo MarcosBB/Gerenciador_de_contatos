@@ -168,11 +168,16 @@ def obtemVariavel(tipo):
         else:
             break
     return text
-'''
+
 def adicionaContato():
-    contatos.append(contato(obtemVariavel("nome"), obtemVariavel("email"), obtemVariavel("grupoDeInteresse"), obtemVariavel("nomeTwitter"), obtemVariavel("nomeFacebook"), obtemVariavel("nomeMySpace"), obtemVariavel("nomeLinkedin"), obtemVariavel("nomeInstagram")))
-    print("CONTATO ADICIONADO !")
-'''
+    cursor = con.cursor()
+    cursor.execute("insert into pessoas values (default,'" + obtemVariavel("nome") + "','" + obtemVariavel("email") +"','"+ obtemVariavel("grupoDeInteresse")+"','"+obtemVariavel("nomeTwitter")+"','"+obtemVariavel("nomeFacebook")+"','"+ obtemVariavel("nomeMySpace")+"','"+ obtemVariavel("nomeLinkedin")+"','"+ obtemVariavel("nomeInstagram")+"');")
+
+    con.commit()
+    print(str(cursor.rowcount) + " contatos inseridos com sucesso!!!")
+    cursor.close()
+    con.close()
+
 def menu(mensagem):
     if mensagem != "":
         print(mensagem)
@@ -276,22 +281,24 @@ def menu(mensagem):
 
     elif opcao == 3: #Adicionar contato
         print("------MENU -> ADICIONAR CONTATO ------")
-        contatos.append(contato(obtemVariavel("nome"), obtemVariavel("email"), obtemVariavel("grupoDeInteresse"), obtemVariavel("nomeTwitter"), obtemVariavel("nomeFacebook"), obtemVariavel("nomeMySpace"), obtemVariavel("nomeLinkedin"), obtemVariavel("nomeInstagram")))
-        print("CONTATO ADICIONADO !")
+        adicionaContato()
 
     elif opcao == 4: #Sair
         global continua
-        while True:
-            if con.is_connected():
+        if con.is_connected():
+            while True:
                 cursor.close()
                 con.close()
                 if False == con.is_connected():
                     print("Conexão ao MySQL foi encerrada")
                     continua = False
+                    print("Programa encerrado!!!")
                     break
                 else:
                     print("ERRO: Conexão não foi encerrada!!!")
-
+        else: 
+            continua = False
+            print("Programa encerrado!!!")
     
     else:
         print("ERRO: OPÇÃO INEXISTENTE!!!")
@@ -311,35 +318,24 @@ contatos.append(contato("Pai", "paitaon@hotmail.com", "familia", "papai", "ainda
 contatos.append(contato("Rafael Neto", "rafaelNeto@hotmail.com", "trabalho", "Rafa", "Rafaneto", "RafaReto", "Rafinha062", "@Tafarel666"))
 
 con = mysql.connector.connect(host='localhost', database='contatos', user='root', password='suaSenha')
-
-try:
+cursor = con.cursor()
+if con.is_connected():
+    alerta = ("Conectado as servidos MySQL versão " + str(con.get_server_info()))
+    cursor.execute("select database();")
+    alerta = alerta + ("\nConectado ao banco de dados " + str(cursor.fetchone()))
     if con.is_connected():
-        db_info = con.get_server_info()
-        alerta = "Conectado as servidos MySQL versão " + str(db_info)
-        
-        cursor = con.cursor()
-        cursor.execute("select database();")
-        
-        linha = cursor.fetchone()
-        alerta = alerta + "\n" + "Conectado ao banco de dados " + str(linha)
+        cursor.close()
+        con.close()
 
-        print("")    
+print("")
 
-except Error as e:
-    print("Erro ao acessar tabela MySQL", e)
-
-finally:
-    continua = True
-
-    while continua:
-        os.system('cls')
-    
-        menu(alerta)
-        if continua:
-            print("")
-            pause()
-        else:
-            print("Programa encerrado!!!")
+continua = True
+while continua:
+    os.system('cls')
+    menu(alerta)
+    if continua:
+        print("")
+        pause()
 
 
 
