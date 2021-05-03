@@ -26,14 +26,14 @@ DROP TABLE IF EXISTS `pessoas`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pessoas` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(30) NOT NULL,
-  `email` varchar(30) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
   `grupoDeInteresse` enum('familia','amigos','trabalho') DEFAULT NULL,
-  `nomeTwitter` varchar(30) DEFAULT NULL,
-  `nomeFacebook` varchar(30) DEFAULT NULL,
-  `nomeMySpace` varchar(30) DEFAULT NULL,
-  `nomeLinkedin` varchar(30) DEFAULT NULL,
-  `nomeInstagram` varchar(30) DEFAULT NULL,
+  `nomeTwitter` varchar(40) DEFAULT '',
+  `nomeFacebook` varchar(40) DEFAULT '',
+  `nomeMySpace` varchar(40) DEFAULT '',
+  `nomeLinkedin` varchar(40) DEFAULT '',
+  `nomeInstagram` varchar(40) DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -56,4 +56,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-05-02 22:49:10
+-- Dump completed on 2021-05-03  2:24:45
