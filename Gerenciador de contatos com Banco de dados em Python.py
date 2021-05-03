@@ -13,21 +13,33 @@ class contato:
         self.nomeMySpace = nomeMySpace
         self.nomeLinkedin = nomeLinkedin
         self.nomeInstagram = nomeInstagram
-        
-    def exibeInformacoes(self):
-        print("Nome: " + self.nome)
-        print("E-mail: " + self.email)
-        if self.nomeTwitter != "":
-            print("Twitter: " + self.nomeTwitter)
-        if self.nomeFacebook != "":
-            print("Facebook: " + self.nomeFacebook)
-        if self.nomeMySpace != "":
-            print("MySpace: " + self.nomeMySpace)
-        if self.nomeLinkedin != "":
-            print("Linkedin: " + self.nomeLinkedin)
-        if self.nomeInstagram != "":
-            print("Instagram: " + self.nomeInstagram)
     
+def exibeInformacoes(idcontato): #Pronta
+    iniciaConexao()
+    cursor.execute("select * from pessoas where id = '" + str(idcontato) + "';")
+    linha = cursor.fetchone()
+    terminaConexao()
+
+    nome = 1
+    email = 2
+    nomeTwitter = 4
+    nomeFacebook = 5
+    nomeMySpace = 6
+    nomeLinkedin = 7
+    nomeInstagram = 8
+
+    print("Nome: " + linha[nome])
+    print("E-mail: " + linha[email])
+    if linha[nomeTwitter] != '':
+        print("Twitter: " + linha[nomeTwitter])
+    if linha[nomeFacebook] != '':
+        print("Facebook: " + linha[nomeFacebook])
+    if linha[nomeMySpace] != '':
+        print("MySpace: " + linha[nomeMySpace])
+    if linha[nomeLinkedin] != '':
+        print("Linkedin: " + linha[nomeLinkedin])
+    if linha[nomeInstagram] != '':
+        print("Instagram: " + linha[nomeInstagram])
  
 def busca(text, tipo): 
     #Buscar contatos por nomes ou emails;
@@ -195,14 +207,13 @@ def menu(mensagem):
                     ordemAlfabetica("nomeInstagram")
 
                 while True:
-                    indiceDoIndiceDaOrdem = int(input("Escolha um contato para exibir informaçãoes: "))
-                    if indiceDoIndiceDaOrdem <= len(contatos) and indiceDoIndiceDaOrdem >= 0:
+                    indiceDoidOrdenado = int(input("Escolha um contato para exibir informaçãoes: "))
+                    if indiceDoidOrdenado <= len(idOrdenado) and indiceDoidOrdenado >= 0:
                         print("")
-                        contatos[indiceDaOrdem[indiceDoIndiceDaOrdem]].exibeInformacoes()
+                        exibeInformacoes(idOrdenado[indiceDoidOrdenado])
                         break
                     else:
                         print("ERRO: OPÇÃO INEXISTENTE!!!")
-
             else:
                 print("ERRO: OPÇÃO INEXISTENTE!!!")
                 
@@ -214,10 +225,10 @@ def menu(mensagem):
             ordenarPorGrupoDeInteresse()
 
             while True:
-                indiceDoIndiceDaOrdem = int(input("Escolha um contato para exibir informaçãoes: "))
-                if indiceDoIndiceDaOrdem <= len(contatos) and indiceDoIndiceDaOrdem >= 0:
+                indiceDoidOrdenado = int(input("Escolha um contato para exibir informaçãoes: "))
+                if indiceDoidOrdenado <= len(idOrdenado) and indiceDoidOrdenado >= 0:
                     print("")
-                    contatos[indiceDaOrdem[indiceDoIndiceDaOrdem]].exibeInformacoes()
+                    exibeInformacoes(idOrdenado[indiceDoidOrdenado])
                     break
                 else:
                     print("ERRO: OPÇÃO INEXISTENTE!!!")
@@ -269,7 +280,7 @@ def pause(): #Pronta
 def iniciaConexao(): #Pronta
     global con
     global cursor
-    con = mysql.connector.connect(host='localhost', database='contatos', user='root', password='seuNome')
+    con = mysql.connector.connect(host='localhost', database='contatos', user='root', password='suaSenha')
     cursor = con.cursor()
     
 def terminaConexao(): #Pronta
