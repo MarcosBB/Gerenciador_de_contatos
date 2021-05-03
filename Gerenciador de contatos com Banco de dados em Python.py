@@ -1,18 +1,6 @@
 import os
 import mysql.connector
 from mysql.connector import Error
-
-
-class contato:
-    def __init__(self, nome, email, grupoDeInteresse, nomeTwitter, nomeFacebook, nomeMySpace, nomeLinkedin, nomeInstagram):
-        self.nome = nome
-        self.email = email
-        self.grupoDeInteresse = grupoDeInteresse
-        self.nomeTwitter = nomeTwitter
-        self.nomeFacebook = nomeFacebook
-        self.nomeMySpace = nomeMySpace
-        self.nomeLinkedin = nomeLinkedin
-        self.nomeInstagram = nomeInstagram
     
 def exibeInformacoes(idcontato): #Pronta
     iniciaConexao()
@@ -41,29 +29,25 @@ def exibeInformacoes(idcontato): #Pronta
     if linha[nomeInstagram] != '':
         print("Instagram: " + linha[nomeInstagram])
  
-def busca(text, tipo): 
-    #Buscar contatos por nomes ou emails;
-    global contatos
-    existe = False
-    text = text.lower()
+def busca(text, tipo): #Pronta
+    #Buscar contatos por nomes ou emails; 
+    global idOrdenado
+    idOrdenado = []
+    contador = 0 
+    idPessoa = 0
+    nome = 1
+
+    iniciaConexao()
+    cursor.execute("select id, " + tipo +" from pessoas where " + tipo + " like '%" +  text + "%' order by nome;")
+    linhas = cursor.fetchall()
+    terminaConexao()
+    
+    for linha in linhas:
+        print(str(contador) +" - " + linha[nome])
+        idOrdenado.append(linha[idPessoa])
+        contador = contador + 1
 
     print("")
-    if tipo == "nome":
-        for i in range(0, len(contatos)):
-            if text == contatos[i].nome.lower():
-                contatos[i].exibeInformacoes()
-                existe = True
-                break
-
-    if tipo == "email":
-        for i in range(0, len(contatos)):
-            if text == contatos[i].email:
-                contatos[i].exibeInformacoes()
-                existe = True
-                break
-
-    if existe == False:
-        print("Não existe contato com esse " + tipo)
 
 def ordemAlfabetica(tipo): #Pronta
     #Organizar contato por ordem alfabética dos nomes, emails ou nome das redes sociais;
@@ -87,34 +71,42 @@ def ordemAlfabetica(tipo): #Pronta
 
     print("")
 
-def ordenarPorGrupoDeInteresse():   
+def ordenarPorGrupoDeInteresse(): #Pronta
     #Organizar contato por grupos de interesse.
-    global contatos
     contador = 0
-    global indiceDaOrdem 
-    indiceDaOrdem = []
+    global idOrdenado
+    idOrdenado = []
+    idPessoa = 0
+    nome = 1
+
+    iniciaConexao()
+    cursor.execute("select id, nome from pessoas where grupoDeInteresse = 'familia' order by nome;")
+    linhas = cursor.fetchall()
     print("Família:")
-    for i in range(0, len(contatos)):
-        if contatos[i].grupoDeInteresse == "familia":
-            print(str(contador) +" - " + contatos[i].nome)
-            indiceDaOrdem.append(i)
-            contador = contador + 1
-            
+    for linha in linhas:
+        print(str(contador) +" - " + linha[nome])
+        idOrdenado.append(linha[idPessoa])
+        contador = contador + 1
+
+    cursor.execute("select id, nome from pessoas where grupoDeInteresse = 'amigos' order by nome;")
+    linhas = cursor.fetchall()
     print("")
     print("Amigos:")        
-    for i in range(0, len(contatos)):
-        if contatos[i].grupoDeInteresse == "amigos":
-            print(str(contador) +" - " + contatos[i].nome)
-            indiceDaOrdem.append(i)
-            contador = contador + 1
+    for linha in linhas:
+        print(str(contador) +" - " + linha[nome])
+        idOrdenado.append(linha[idPessoa])
+        contador = contador + 1
     
+    cursor.execute("select id, nome from pessoas where grupoDeInteresse = 'trabalho' order by nome;")
+    linhas = cursor.fetchall()
     print("")
     print("Trabalho:")        
-    for i in range(0, len(contatos)):
-        if contatos[i].grupoDeInteresse == "trabalho":
-            print(str(contador) +" - " + contatos[i].nome)
-            indiceDaOrdem.append(i)
-            contador = contador + 1
+    for linha in linhas:
+        print(str(contador) +" - " + linha[nome])
+        idOrdenado.append(linha[idPessoa])
+        contador = contador + 1
+
+    terminaConexao()
 
 def obtemVariavel(tipo): #Pronta
     while True:
@@ -149,7 +141,7 @@ def adicionaContato(): #Pronta
     print(str(cursor.rowcount) + " contatos inseridos com sucesso!!!")
     terminaConexao()
 
-def menu(mensagem):
+def menu(mensagem): #Pronta
     if mensagem != "":
         print(mensagem)
 
@@ -208,7 +200,7 @@ def menu(mensagem):
 
                 while True:
                     indiceDoidOrdenado = int(input("Escolha um contato para exibir informaçãoes: "))
-                    if indiceDoidOrdenado <= len(idOrdenado) and indiceDoidOrdenado >= 0:
+                    if indiceDoidOrdenado < len(idOrdenado) and indiceDoidOrdenado >= 0:
                         print("")
                         exibeInformacoes(idOrdenado[indiceDoidOrdenado])
                         break
@@ -223,10 +215,11 @@ def menu(mensagem):
 
             print("------MENU -> EXIBIÇÃO -> GRUPOS DE INTERESSE------")
             ordenarPorGrupoDeInteresse()
+            print("")
 
             while True:
                 indiceDoidOrdenado = int(input("Escolha um contato para exibir informaçãoes: "))
-                if indiceDoidOrdenado <= len(idOrdenado) and indiceDoidOrdenado >= 0:
+                if indiceDoidOrdenado < len(idOrdenado) and indiceDoidOrdenado >= 0:
                     print("")
                     exibeInformacoes(idOrdenado[indiceDoidOrdenado])
                     break
@@ -242,13 +235,27 @@ def menu(mensagem):
         print("2 - Buscar e-mail ")
 
         opcaoBusca = int(input("Escolha um modo de busca:"))
+        
+        os.system('cls')
+        print("------MENU -> BUSCA -> RESULTADO------")
+
         if opcaoBusca == 1:
-            busca(input("Digite o nome:"), "nome")
+            busca(input("Digite o nome: "), "nome")
         elif opcaoBusca == 2:
-            busca(input("Digite o e-mail:"), "email")
+            busca(input("Digite o e-mail: "), "email")
         else:
             print("ERRO: OPÇÃO INEXISTENTE!!!")
 
+        
+        while True:
+            indiceDoidOrdenado = int(input("Escolha um contato para exibir informaçãoes: "))
+            if indiceDoidOrdenado < len(idOrdenado) and indiceDoidOrdenado >= 0:
+                print("")
+                exibeInformacoes(idOrdenado[indiceDoidOrdenado])
+                break
+            else:
+                print("ERRO: OPÇÃO INEXISTENTE!!!")
+   
     elif opcao == 3: #Adicionar contato
         print("------MENU -> ADICIONAR CONTATO ------")
         adicionaContato()
@@ -287,16 +294,6 @@ def terminaConexao(): #Pronta
     if con.is_connected():
         cursor.close()
         con.close()
-
-contatos = []
-contatos.append(contato("Marcos Creison", "marcos.creison@hotmail.com", "familia", "c0s000", "c0s0Br", "c0s0", "MarcosBB", "@marcosberaldobarros"))
-contatos.append(contato("Gabriela Honorato", "Gabizinha@gmail.com", "amigos", "Gabi", "gabiGames", "Gabishow", "Gabiscate", "@Grabigrela"))
-contatos.append(contato("Cremilson Gomes", "Cremilson.Gomes@yahoo.com", "amigos", "Gomes Cremilson", "cremilson Gomes", "cremilson", "cremiltinho", "@cremilsonZéNenhum"))
-contatos.append(contato("Lariscreide Bento", "Lariscreide.bento@ufrn.edu.br", "amigos", "lari", "lalilinda", "loyolinda", "Lariririsx", "@LariscreidePrimeira"))
-contatos.append(contato("Zé Lipeson das cruzes", "ze.cruzes@hotmail.com", "trabalho", "cruzesZe", "cruzetinho", "cruZe", "LimpeZe", "@ZéLipe"))
-contatos.append(contato("Mãe", "minhamae@hotmail.com", "familia", "mainha", "mamae", "mami", "maie", "@maenoinsta"))
-contatos.append(contato("Pai", "paitaon@hotmail.com", "familia", "papai", "aindaComprandoCigarro", "papaizinho", "paitaOn", "@PaiFake"))
-contatos.append(contato("Rafael Neto", "rafaelNeto@hotmail.com", "trabalho", "Rafa", "Rafaneto", "RafaReto", "Rafinha062", "@Tafarel666"))
 
 iniciaConexao()
 if con.is_connected():
