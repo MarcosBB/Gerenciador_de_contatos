@@ -287,6 +287,8 @@ def pause(): #Pronta
 def iniciaConexao(): #Pronta
     global con
     global cursor
+    
+    #Altere as informações do seu servidor MySQL aqui
     con = mysql.connector.connect(host='localhost', database='contatos', user='root', password='suaSenha')
     cursor = con.cursor()
     
@@ -299,7 +301,8 @@ iniciaConexao()
 if con.is_connected():
     alerta = ("Conectado as servidos MySQL versão " + str(con.get_server_info()))
     cursor.execute("select database();")
-    alerta = alerta + ("\nConectado ao banco de dados " + str(cursor.fetchone()))
+    linha = cursor.fetchone()
+    alerta = alerta + ("\nConectado ao banco de dados '" + str(linha[0])+"'")
 terminaConexao()
 
 print("")
