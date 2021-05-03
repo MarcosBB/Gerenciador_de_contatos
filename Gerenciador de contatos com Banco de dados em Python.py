@@ -29,7 +29,7 @@ class contato:
             print("Instagram: " + self.nomeInstagram)
     
  
-def busca(text, tipo): #PRONTA
+def busca(text, tipo): 
     #Buscar contatos por nomes ou emails;
     global contatos
     existe = False
@@ -53,72 +53,29 @@ def busca(text, tipo): #PRONTA
     if existe == False:
         print("Não existe contato com esse " + tipo)
 
-def ordemAlfabetica(tipo): #PRONTA
+def ordemAlfabetica(tipo): #Pronta
     #Organizar contato por ordem alfabética dos nomes, emails ou nome das redes sociais;
-    global contatos
-    alfabeto = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-    contador = 0
-    global indiceDaOrdem 
-    indiceDaOrdem = []
+    global idOrdenado
+    idOrdenado = []
+    contador = 0 
+
+    iniciaConexao()
+    cursor.execute("select id, " + tipo + " from pessoas where "+ tipo +" != '' order by " + tipo + ";")
+    linhas = cursor.fetchall()
+    totalContatos = cursor.rowcount
+    print(str(totalContatos) + " contatos encontrados que possuem um " + tipo + " \n")
+    terminaConexao()
+
+    idPessoa = 0
+    nome = 1
+    for linha in linhas:
+        print(str(contador) +" - " + linha[nome])
+        idOrdenado.append(linha[idPessoa])
+        contador = contador + 1
 
     print("")
-    if tipo == "nome":
-        for j in range(0, len(alfabeto)):
-            for i in range(0, len(contatos)):
-                if contatos[i].nome[0].lower() == alfabeto[j].lower():
-                    print(str(contador) +" - " + contatos[i].nome)
-                    indiceDaOrdem.append(i)
-                    contador = contador + 1
-    
-    if tipo == "email":
-        for j in range(0, len(alfabeto)):
-            for i in range(0, len(contatos)):
-                if contatos[i].email[0].lower() == alfabeto[j].lower():
-                    print(str(contador) +" - " + contatos[i].email)
-                    indiceDaOrdem.append(i)
-                    contador = contador + 1
 
-    if tipo == "nomeTwitter":
-        for j in range(0, len(alfabeto)):
-            for i in range(0, len(contatos)):
-                if contatos[i].nomeTwitter[0].lower() == alfabeto[j].lower():
-                    print(str(contador) +" - " + contatos[i].nomeTwitter)
-                    indiceDaOrdem.append(i)
-                    contador = contador + 1
-
-    if tipo == "nomeFacebook":
-        for j in range(0, len(alfabeto)):
-            for i in range(0, len(contatos)):
-                if contatos[i].nomeFacebook[0].lower() == alfabeto[j].lower():
-                    print(str(contador) +" - " + contatos[i].nomeFacebook)
-                    indiceDaOrdem.append(i)
-                    contador = contador + 1
-
-    if tipo == "nomeMySpace":
-        for j in range(0, len(alfabeto)):
-            for i in range(0, len(contatos)):
-                if contatos[i].nomeMySpace[0].lower() == alfabeto[j].lower():
-                    print(str(contador) +" - " + contatos[i].nomeMySpace)
-                    indiceDaOrdem.append(i)
-                    contador = contador + 1
-
-    if tipo == "nomeLinkedin":
-        for j in range(0, len(alfabeto)):
-            for i in range(0, len(contatos)):
-                if contatos[i].nomeLinkedin[0].lower() == alfabeto[j].lower():
-                    print(str(contador) +" - " + contatos[i].nomeLinkedin)   
-                    indiceDaOrdem.append(i)
-                    contador = contador + 1 
-
-    if tipo == " nomeInstagram":
-        for j in range(0, len(alfabeto)):
-            for i in range(0, len(contatos)):
-                if contatos[i]. nomeInstagram[0].lower() == alfabeto[j].lower():
-                    print(str(contador) +" - " + contatos[i]. nomeInstagram)    
-                    indiceDaOrdem.append(i)
-                    contador = contador + 1
-
-def ordenarPorGrupoDeInteresse():   #PRONTA
+def ordenarPorGrupoDeInteresse():   
     #Organizar contato por grupos de interesse.
     global contatos
     contador = 0
@@ -147,7 +104,7 @@ def ordenarPorGrupoDeInteresse():   #PRONTA
             indiceDaOrdem.append(i)
             contador = contador + 1
 
-def obtemVariavel(tipo):
+def obtemVariavel(tipo): #Pronta
     while True:
         if tipo == "grupoDeInteresse":
             while True:
@@ -167,11 +124,11 @@ def obtemVariavel(tipo):
             break
     return text
 
-def obtemVariavelOpcional(tipo):
+def obtemVariavelOpcional(tipo): #Pronta
     text = input(tipo + ": ")
     return text
 
-def adicionaContato():
+def adicionaContato(): #Pronta
     iniciaConexao()
     print("Legenda: * Obrigatória")
     cursor.execute("insert into pessoas values (default,'" + obtemVariavel("nome") + "','" + obtemVariavel("email") +"','"+ obtemVariavel("grupoDeInteresse")+"','"+obtemVariavelOpcional("nomeTwitter")+"','"+obtemVariavelOpcional("nomeFacebook")+"','"+ obtemVariavelOpcional("nomeMySpace")+"','"+ obtemVariavelOpcional("nomeLinkedin")+"','"+ obtemVariavelOpcional("nomeInstagram")+"');")
@@ -305,17 +262,17 @@ def menu(mensagem):
     else:
         print("ERRO: OPÇÃO INEXISTENTE!!!")
 
-def pause():
+def pause(): #Pronta
     #função que criei por que o os.system('pause') não tava funcionando no Trinket
     nada = input("Pressione ENTER para continuar...")
 
-def iniciaConexao():
+def iniciaConexao(): #Pronta
     global con
     global cursor
-    con = mysql.connector.connect(host='localhost', database='contatos', user='root', password='suaSenha')
+    con = mysql.connector.connect(host='localhost', database='contatos', user='root', password='seuNome')
     cursor = con.cursor()
     
-def terminaConexao():
+def terminaConexao(): #Pronta
     if con.is_connected():
         cursor.close()
         con.close()
