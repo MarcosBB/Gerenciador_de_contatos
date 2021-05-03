@@ -28,7 +28,7 @@ class contato:
         if self.nomeInstagram != "":
             print("Instagram: " + self.nomeInstagram)
     
-# Funções que a professora pediu    
+ 
 def busca(text, tipo): #PRONTA
     #Buscar contatos por nomes ou emails;
     global contatos
@@ -147,8 +147,6 @@ def ordenarPorGrupoDeInteresse():   #PRONTA
             indiceDaOrdem.append(i)
             contador = contador + 1
 
-
-# Funções extras
 def obtemVariavel(tipo):
     while True:
         if tipo == "grupoDeInteresse":
@@ -161,7 +159,7 @@ def obtemVariavel(tipo):
                     print("ERRO: O campo " + tipo + " deve conter somente uma das opçães (amigos, familia, trabalho) !!!")
                     print("")
         else:
-            text = input(tipo + ": ")
+            text = input(tipo + "*: ")
 
         if text == "":
             print("ERRO: O campo " + tipo +" é OBRIGATÓRIO!")
@@ -169,14 +167,18 @@ def obtemVariavel(tipo):
             break
     return text
 
+def obtemVariavelOpcional(tipo):
+    text = input(tipo + ": ")
+    return text
+
 def adicionaContato():
-    cursor = con.cursor()
-    cursor.execute("insert into pessoas values (default,'" + obtemVariavel("nome") + "','" + obtemVariavel("email") +"','"+ obtemVariavel("grupoDeInteresse")+"','"+obtemVariavel("nomeTwitter")+"','"+obtemVariavel("nomeFacebook")+"','"+ obtemVariavel("nomeMySpace")+"','"+ obtemVariavel("nomeLinkedin")+"','"+ obtemVariavel("nomeInstagram")+"');")
+    iniciaConexao()
+    print("Legenda: * Obrigatória")
+    cursor.execute("insert into pessoas values (default,'" + obtemVariavel("nome") + "','" + obtemVariavel("email") +"','"+ obtemVariavel("grupoDeInteresse")+"','"+obtemVariavelOpcional("nomeTwitter")+"','"+obtemVariavelOpcional("nomeFacebook")+"','"+ obtemVariavelOpcional("nomeMySpace")+"','"+ obtemVariavelOpcional("nomeLinkedin")+"','"+ obtemVariavelOpcional("nomeInstagram")+"');")
 
     con.commit()
     print(str(cursor.rowcount) + " contatos inseridos com sucesso!!!")
-    cursor.close()
-    con.close()
+    terminaConexao()
 
 def menu(mensagem):
     if mensagem != "":
@@ -307,6 +309,17 @@ def pause():
     #função que criei por que o os.system('pause') não tava funcionando no Trinket
     nada = input("Pressione ENTER para continuar...")
 
+def iniciaConexao():
+    global con
+    global cursor
+    con = mysql.connector.connect(host='localhost', database='contatos', user='root', password='suaSenha')
+    cursor = con.cursor()
+    
+def terminaConexao():
+    if con.is_connected():
+        cursor.close()
+        con.close()
+
 contatos = []
 contatos.append(contato("Marcos Creison", "marcos.creison@hotmail.com", "familia", "c0s000", "c0s0Br", "c0s0", "MarcosBB", "@marcosberaldobarros"))
 contatos.append(contato("Gabriela Honorato", "Gabizinha@gmail.com", "amigos", "Gabi", "gabiGames", "Gabishow", "Gabiscate", "@Grabigrela"))
@@ -317,15 +330,12 @@ contatos.append(contato("Mãe", "minhamae@hotmail.com", "familia", "mainha", "ma
 contatos.append(contato("Pai", "paitaon@hotmail.com", "familia", "papai", "aindaComprandoCigarro", "papaizinho", "paitaOn", "@PaiFake"))
 contatos.append(contato("Rafael Neto", "rafaelNeto@hotmail.com", "trabalho", "Rafa", "Rafaneto", "RafaReto", "Rafinha062", "@Tafarel666"))
 
-con = mysql.connector.connect(host='localhost', database='contatos', user='root', password='suaSenha')
-cursor = con.cursor()
+iniciaConexao()
 if con.is_connected():
     alerta = ("Conectado as servidos MySQL versão " + str(con.get_server_info()))
     cursor.execute("select database();")
     alerta = alerta + ("\nConectado ao banco de dados " + str(cursor.fetchone()))
-    if con.is_connected():
-        cursor.close()
-        con.close()
+terminaConexao()
 
 print("")
 
