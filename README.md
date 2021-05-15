@@ -15,6 +15,7 @@ Você deve:
 6. Rodar o programa `Gerenciador de contatos com Banco de dados em Python.py`
 
 ### Como alterar informações do servidor MySQL?
+***
 No arquivo `Gerenciador de contatos com Banco de dados em Python.py`, na função `def iniciaConexao():` você deve alterar as informações do servidor (`host`, `user` e `password`) MySQL que você esta usando.
 
 ```
